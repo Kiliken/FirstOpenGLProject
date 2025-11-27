@@ -43,5 +43,5 @@
 
 # Project Specific
 *.zip
-/[De]ep/
+/[Dd]ep/
 /[Bb]uild/
