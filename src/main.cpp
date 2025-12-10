@@ -5,6 +5,7 @@
 #include <iostream>
 #include "loadShader.h"
 #include "loadDDS.h"
+#include "Inputs.h"
 
 #include "cubeBuffers.h"
 
@@ -17,36 +18,40 @@ int main(void)
         return -1;
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(1280, 720, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
         return -1;
     }
-
+    
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
-    int winWidth, winHeight;
+    // Initialize Inputs
+    Inputs inputs(window);
 
+    int winWidth, winHeight;
     glfwGetWindowSize(window, &winWidth, &winHeight);
 
     if (glewInit() == GLEW_OK)
         std::cout << glGetString(GL_VERSION) << std::endl;
 
-
     // Dark blue background
-	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+    glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
-	// Enable depth test
-	glEnable(GL_DEPTH_TEST);
-	// Accept fragment if it is closer to the camera than the former one
-	glDepthFunc(GL_LESS); 
-
-    GLuint VertexArrayID;
-	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
+    // Enable depth test
+    //glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    // Accept fragment if it is closer to the camera than the former one
+    glDepthFunc(GL_LESS);
     
+
+    // GL Stuffs
+    GLuint VertexArrayID;
+    glGenVertexArrays(1, &VertexArrayID);
+    glBindVertexArray(VertexArrayID);
+
     GLuint vertexbuffer;
     glGenBuffers(1, &vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -61,10 +66,10 @@ int main(void)
 
     // Camera Projections
     glm::mat4 Projection;
-    if(true)    // perspective
+    if (true) // perspective
         Projection = glm::perspective(glm::radians(45.0f), (float)winWidth / (float)winHeight, 0.1f, 100.0f);
-    else        // orthographic
-        Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f);
+    else // orthographic
+        Projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.0f, 100.0f);
 
     // Camera matrix
     glm::mat4 View = glm::lookAt(
@@ -84,9 +89,27 @@ int main(void)
     // Get a handle for our "MVP" uniform
     GLuint MatrixID = glGetUniformLocation(programID, "MVP");
 
+    float lastTime = 0.0f;
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
+        double currentTime = glfwGetTime();
+        float deltaTime = float(currentTime - lastTime);
+        lastTime = currentTime;
+
+        inputs.Update(deltaTime);
+
+        // Projection matrix : 45&deg; Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+        Projection = glm::perspective(glm::radians(60.0f), 16.0f / 9.0f, 0.1f, 100.0f);
+        // Camera matrix
+        View = glm::lookAt(
+            inputs.position,             // Camera is here
+            inputs.position + inputs.direction, // and looks here : at the same position, plus "direction"
+            inputs.up                    // Head is up (set to 0,-1,0 to look upside-down)
+        );
+
+        mvp = Projection * View * Model;
+
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -131,10 +154,11 @@ int main(void)
     }
 
     glDeleteBuffers(1, &vertexbuffer);
-	glDeleteBuffers(1, &colorbuffer);
-	glDeleteProgram(programID);
-	glDeleteTextures(1, &Texture);
-	glDeleteVertexArrays(1, &VertexArrayID);
+    glDeleteBuffers(1, &colorbuffer);
+    glDeleteProgram(programID);
+    glDeleteTextures(1, &Texture);
+    glDeleteVertexArrays(1, &VertexArrayID);
+
 
     glfwTerminate();
     return 0;
