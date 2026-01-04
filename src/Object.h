@@ -12,6 +12,19 @@
 #include "Inputs.h"
 #include "vboIndexer.h"
 
+#define CUBE_MODEL ("CUBE")
+
+extern const unsigned char _binary_cube_obj_start[];
+extern const unsigned char _binary_cube_obj_end[];
+
+size_t cubeSize = _binary_cube_obj_end - _binary_cube_obj_start;
+
+std::string cubeData(
+    (const char*)_binary_cube_obj_start,
+    cubeSize
+);
+
+
 class Object
 {
 
@@ -74,7 +87,6 @@ private:
     glm::mat4* view;
     glm::vec3* lightPos;
 
-
 };
 
 Object::Object(const char* fileName, GLuint* prog, glm::mat4* View, glm::mat4& camera, glm::vec3* LightPos)
@@ -85,7 +97,11 @@ Object::Object(const char* fileName, GLuint* prog, glm::mat4* View, glm::mat4& c
     std::vector<glm::vec3> tempTangents;
     std::vector<glm::vec3> tempBitangents; 
 
-    loadOBJ(fileName, tempVertices, tempUvs, tempNormals);
+    if(fileName == CUBE_MODEL){
+        loadOBJ(cubeData, tempVertices, tempUvs, tempNormals);
+    }
+    else loadOBJ(fileName, tempVertices, tempUvs, tempNormals);
+
     computeTangentBasis(tempVertices, tempUvs, tempNormals, tempTangents, tempBitangents);
     indexVBO_TBN(tempVertices,tempUvs,tempNormals,tempTangents, tempBitangents,indices, vertices,uvs,normals, tangents, bitangents);
 

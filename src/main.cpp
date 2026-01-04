@@ -14,6 +14,8 @@
 #include "vboIndexer.h"
 #include "Object.h"
 
+
+
 int main(void)
 {
     GLFWwindow *window;
@@ -98,7 +100,7 @@ int main(void)
     GLuint programID = LoadShaders("../res/shaders/NormalMappingShader.vert", "../res/shaders/NormalMappingShader.frag");
 
 
-    Object cube("../res/cube.obj",&programID,&View,Projection,&lightPos);
+    Object cube(CUBE_MODEL,&programID,&View,Projection,&lightPos);
     Object cube2("../res/cube.obj",&programID,&View,Projection,&lightPos);
     
 

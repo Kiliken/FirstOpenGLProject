@@ -8,6 +8,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Add Defines
 add_compile_definitions(RELEASE)
 
+
+# Check File to Embed
+file(GLOB RESOURCE_OBJECTS CONFIGURE_DEPENDS
+    "${CMAKE_SOURCE_DIR}/res/embed/*.o"
+)
+
 # Executable Files
 add_executable(App
 
@@ -54,3 +60,11 @@ target_link_libraries(App PRIVATE
 	glfw3dll
 	glew32
 )
+
+
+# Embedding objects
+target_sources(App PRIVATE
+    ${RESOURCE_OBJECTS}
+)
+
+
