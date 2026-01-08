@@ -49,9 +49,9 @@ public:
     void Draw();
 
     void Transform(const glm::mat4 &transform);
-    void Position(const glm::vec3 &position);
-    void Rotation(const glm::vec3 &rotation);
-    void Scale(const glm::vec3 &scale);
+    void SetPosition(const float& x, const float& y, const float& z);
+    void SetRotation(const float& x, const float& y, const float& z);
+    void SetScale(const float& x, const float& y, const float& z);
 
 private:
     // Render
@@ -145,9 +145,9 @@ Object::Object(const char *fileName, GLuint *prog, glm::mat4 *View, glm::mat4 *c
     glBindBuffer(GL_ARRAY_BUFFER, bitangentbuffer);
     glBufferData(GL_ARRAY_BUFFER, bitangents.size() * sizeof(glm::vec3), &bitangents[0], GL_STATIC_DRAW);
 
-    DiffuseTexture = loadDDS("../res/diffuse.dds");
-    NormalTexture = loadDDS("../res/normals.dds");
-    SpecularTexture = loadDDS("../res/specular.dds");
+    DiffuseTexture = loadDDS("../res/baseDiffuse.dds");
+    NormalTexture = loadDDS("../res/baseNormals.dds");
+    SpecularTexture = loadDDS("../res/baseSpecular.dds");
 
     DiffuseTextureID = glGetUniformLocation(*shaders, "DiffuseTextureSampler");
     NormalTextureID = glGetUniformLocation(*shaders, "NormalTextureSampler");
@@ -313,17 +313,17 @@ void Object::Transform(const glm::mat4 &transform)
     Model = transform;
 }
 
-void Object::Position(const glm::vec3 &position)
+void Object::SetPosition(const float& x, const float& y, const float& z)
 {
-    localPos = position;
+    localPos = glm::vec3(x,y,z);
 }
 
-void Object::Rotation(const glm::vec3 &rotation)
+void Object::SetRotation(const float& x, const float& y, const float& z)
 {
-    localRot = glm::radians(rotation);
+    localRot = glm::radians(glm::vec3(x,y,z));
 }
 
-void Object::Scale(const glm::vec3 &scale)
+void Object::SetScale(const float& x, const float& y, const float& z)
 {
-    localScale = scale;
+    localScale = glm::vec3(x,y,z);
 }

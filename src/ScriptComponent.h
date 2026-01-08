@@ -82,8 +82,10 @@ void BindFunctions(sol::state& lua) {
             Object(const char*)
         >(),
         "Update", &Object::Update,
-        "Draw", &Object::Draw
-
+        "Draw", &Object::Draw,
+        "SetPosition", &Object::SetPosition,
+        "SetRotation", &Object::SetRotation,
+        "SetScale", &Object::SetScale
     );
 }
 

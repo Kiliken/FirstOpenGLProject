@@ -60,12 +60,13 @@ int main(void)
     // UI Variables
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     glm::vec3 lightPos = glm::vec3(0, 0, 4);
-    glm::vec3 cubePos, cubeRot, cubeScale = glm::vec3(1, 1, 1);
+    glm::vec3 cubePos, cubeRot = glm::vec3(1, 1, 1);
+    float cubeScale = 1.f;
 
     
     // Initiate Lua Scripting
     sol::state lua;
-    lua.open_libraries(sol::lib::base, sol::lib::package);
+    lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math, sol::lib::table, sol::lib::string, sol::lib::io, sol::lib::os);
     BindFunctions(lua);
     lua.script("print('[Sol3] Lua Scripting Loaded')");
 
@@ -170,15 +171,19 @@ int main(void)
             ImGui::Text("Cube Transform");
             ImGui::InputFloat3("Cube Pos", glm::value_ptr(cubePos));
             ImGui::InputFloat3("Cube Rot", glm::value_ptr(cubeRot));
-            ImGui::InputFloat3("Cube Scale", glm::value_ptr(cubeScale));
+            ImGui::SliderFloat("Cube Scale", // The text label for the slider
+                       &cubeScale,      // Address of the variable to link
+                       0.0f,              // Minimum value (v_min)
+                       10.0f,            // Maximum value (v_max)
+                       "%.1f");           // Display format (e.g., one decimal place)
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
             ImGui::End();
         }
 
-        cube.Position(cubePos);
-        cube.Rotation(cubeRot);
-        cube.Scale(cubeScale);
+        cube.SetPosition(cubePos.x,cubePos.y,cubePos.z);
+        cube.SetRotation(cubeRot.x,cubeRot.y,cubeRot.z);
+        cube.SetScale(cubeScale,cubeScale,cubeScale);
 
         
         
